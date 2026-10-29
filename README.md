@@ -1,4 +1,3 @@
-# Online Store Software Developing
 # Online Store Management System
 
 ## Project Overview
