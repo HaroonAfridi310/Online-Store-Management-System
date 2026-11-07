@@ -1,42 +1,86 @@
-# Project Plan — Online Store Management System
+# Project Plan – Online Store Management System
 
-## 1. Project Purpose
-Develop a Python application that allows store administrators to manage product information through a graphical interface.
+## 1. Project Overview
 
-## 2. Intended Users
-Online store administrators.
+The aim of this project is to develop a Python-based Online Store Management System that allows store administrators to manage products and customer orders through a graphical user interface.
 
-## 3. Functional Requirements
-- FR1: Add a new product.
+The application will use Streamlit for the user interface and MySQL for storing and managing data.
+
+## 2. Project Purpose
+
+The purpose is to create a simple system that makes it easier to manage product information, stock quantities and customer orders.
+
+## 3. Intended Users
+
+- Online store administrators.
+- Staff responsible for product and order management.
+
+## 4. Functional Requirements
+
+- FR1: Add new products.
 - FR2: View all products.
-- FR3: Update product details.
-- FR4: Delete a product.
+- FR3: Update existing product details.
+- FR4: Delete products.
+- FR5: Search products by name or category.
+- FR6: Display product details, including price and stock quantity.
+- FR7: Create and manage customer orders.
+- FR8: Connect orders with products using the OrderItem table.
+- FR9: Display order information and status.
 
-## 4. Non-Functional Requirements
+## 5. Non-Functional Requirements
+
 - Validate user input and display understandable error messages.
-- Store changes reliably in the MySQL database.
-- Provide a simple interface that is easy to use.
+- Store database changes reliably.
+- Provide a simple and user-friendly interface.
+- Organise Python code into reusable functions and modules.
+- Test important application functions.
 
-## 5. Database
-Main table: `Product`
+## 6. Database
 
-Fields: ProductID, Name, Category, Price, StockQuantity.
+**Database:** `ecommerce_storedb`
 
-## 6. Technologies
-- Python
-- Streamlit
-- MySQL
-- GitHub
-- pytest or unittest
+**Main tables:**
+- Customer
+- Product
+- Order
+- OrderItem
+- Payment
 
-## 7. Team Responsibilities
-Responsibilities will be assigned among team members for database integration, application logic, user interface, testing, and documentation.
+The Product table stores product information, including ProductID, Name, Category, Price and StockQuantity.
 
-## 8. Milestones
-- Weeks 1–2: Planning and requirements
-- Week 3: Database connection
-- Weeks 4–5: CRUD operations and user interface
-- Week 6: Testing and error handling
-- Week 7: Documentation and final checks
-- Week 8: Demonstration and submission
+The Order and OrderItem tables are used to manage customer orders and their related products.
 
+## 7. Technologies
+
+- Python – application logic and backend.
+- Streamlit – graphical user interface.
+- MySQL – database management.
+- mysql-connector-python – Python and MySQL connection.
+- GitHub – source code management and collaboration.
+- pytest – automated testing.
+
+## 8. Project Milestones
+
+| Week | Main activities |
+|---|---|
+| Weeks 1–2 | Project planning, requirements and initial database preparation |
+| Week 3 | Python–MySQL connection and database integration |
+| Weeks 4–5 | Product and Order CRUD operations and Streamlit interface |
+| Week 6 | Testing, validation and error handling |
+| Week 7 | Documentation and final improvements |
+| Week 8 | Final testing, demonstration and submission |
+
+## 9. Team Organisation
+
+The project is divided among four members:
+
+- Haroon Afridi – Database Management
+- Pradeep Sapkota – Product Module and Backend
+- Poshan Oli – Order Module
+- Lamyae Echaoui – Testing, Documentation and Collaboration
+
+Detailed responsibilities and weekly assignments are maintained in `team-workflow.md`.
+
+## 10. Expected Outcome
+
+The final result will be a working Online Store Management System with product management, product searching, order processing, MySQL database integration and a Streamlit interface. The application will be tested and documented before submission.
