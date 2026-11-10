@@ -47,5 +47,6 @@ The application will initially use the `Product` table with these fields:
 ## Team Contributions
 Team members will share development tasks, review progress, test the application, and contribute to the GitHub repository. Individual responsibilities will be agreed upon by the group.
 
-## Project Status
-Planning and initial development.
+
+
+
