@@ -56,5 +56,5 @@ Planning and initial development.
 | :--- | :--- | :--- |
 | • #4 Implement product CRUD operations<br>• #5 Build Streamlit user interface<br>• #6 Write automated tests<br>• #7 Prepare README and documentation | • #3 Connect Python to MySQL | • #1 Finalize project requirements<br>• #2 Review MySQL database schema |
 
-👉 **[View Live Interactive Board]([PASTE_YOUR_PROJECT_URL_HERE](https://github.com/users/HaroonAfridi310/projects/1/views/1))**
+👉 **[View Live Interactive Board]([(https://github.com/pradeepsapkota-dot/Online-store_Software_developing-/edit/main/README.md)])**
 
