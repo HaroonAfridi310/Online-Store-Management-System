@@ -47,5 +47,14 @@ The application will initially use the `Product` table with these fields:
 ## Team Contributions
 Team members will share development tasks, review progress, test the application, and contribute to the GitHub repository. Individual responsibilities will be agreed upon by the group.
 
+
 ## Project Status
 Planning and initial development.
+## 📋 Project Task Board
+
+| Todo 🔴 | In Progress 🟡 | Done 🟢 |
+| :--- | :--- | :--- |
+| • #4 Implement product CRUD operations<br>• #5 Build Streamlit user interface<br>• #6 Write automated tests<br>• #7 Prepare README and documentation | • #3 Connect Python to MySQL | • #1 Finalize project requirements<br>• #2 Review MySQL database schema |
+
+👉 **[View Live Interactive Board]([PASTE_YOUR_PROJECT_URL_HERE](https://github.com/users/HaroonAfridi310/projects/1/views/1))**
+
