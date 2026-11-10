@@ -13,7 +13,7 @@
 
 ## 1. Introduction
 
-During Week 2, our group continued developing the Online Store Management System using Python and MySQL. The main focus was connecting Python with the MySQL database, implementing database operations, and developing the application interface.
+During Week 3, our group continued developing the Online Store Management System using Python and MySQL. The main focus was connecting Python with the MySQL database, implementing database operations, and developing the application interface.
 
 ## 2. Work Completed
 
