@@ -17,16 +17,14 @@ def create_order(customer_id, items):
         cursor = connection.cursor()
         connection.start_transaction()
 
-        # Check whether the customer exists.
+        # Check whether customer exists.
         cursor.execute(
             "SELECT CustomerID FROM customer WHERE CustomerID = %s",
             (customer_id,)
         )
 
         if cursor.fetchone() is None:
-            print("Customer not found.")
-            connection.rollback()
-            return None
+            raise ValueError("Customer not found.")
 
         # Combine repeated product IDs.
         combined_items = {}
@@ -35,6 +33,9 @@ def create_order(customer_id, items):
             combined_items[product_id] = (
                 combined_items.get(product_id, 0) + quantity
             )
+
+        if not combined_items:
+            raise ValueError("An order must contain at least one product.")
 
         # Create the order.
         cursor.execute(
@@ -48,8 +49,11 @@ def create_order(customer_id, items):
         order_id = cursor.lastrowid
         total_amount = Decimal("0.00")
 
-        # Add products to the order.
+        # Add products and reduce stock.
         for product_id, quantity in combined_items.items():
+
+            if quantity <= 0:
+                raise ValueError("Quantity must be greater than zero.")
 
             cursor.execute(
                 """
@@ -70,9 +74,6 @@ def create_order(customer_id, items):
 
             price = Decimal(str(product[0]))
             stock = product[1]
-
-            if quantity <= 0:
-                raise ValueError("Quantity must be greater than zero.")
 
             if stock < quantity:
                 raise ValueError(
@@ -100,7 +101,7 @@ def create_order(customer_id, items):
 
             total_amount += price * quantity
 
-        # Update the total order amount.
+        # Update total amount.
         cursor.execute(
             """
             UPDATE orders
@@ -129,6 +130,7 @@ def create_order(customer_id, items):
 
 
 def get_all_orders():
+    """Return all orders with customer information."""
     connection = get_connection()
 
     if connection is None:
@@ -170,7 +172,6 @@ def get_all_orders():
                 f"Status: {order[5]} | "
                 f"Total: €{order[6]}"
             )
-            print()
 
         return orders
 
@@ -185,6 +186,7 @@ def get_all_orders():
 
 
 def get_order_details(order_id):
+    """Return order details."""
     connection = get_connection()
 
     if connection is None:
@@ -197,7 +199,12 @@ def get_order_details(order_id):
 
         cursor.execute(
             """
-            SELECT OrderID, CustomerID, OrderDate, OrderStatus, TotalAmount
+            SELECT
+                OrderID,
+                CustomerID,
+                OrderDate,
+                OrderStatus,
+                TotalAmount
             FROM orders
             WHERE OrderID = %s
             """,
@@ -258,6 +265,8 @@ def get_order_details(order_id):
 
 
 def update_order_status(order_id, status):
+    """Update the status of an order."""
+
     allowed_statuses = [
         "Pending",
         "Processing",
@@ -309,7 +318,13 @@ def update_order_status(order_id, status):
 
 
 def record_payment(order_id, method):
-    """Record one full payment for an order."""
+    """
+    Record one full payment for an order.
+
+    After successful payment, automatically change
+    Pending order status to Processing.
+    """
+
     connection = get_connection()
 
     if connection is None:
@@ -319,12 +334,15 @@ def record_payment(order_id, method):
 
     try:
         cursor = connection.cursor()
+        connection.start_transaction()
 
+        # Get order amount and current status.
         cursor.execute(
             """
-            SELECT TotalAmount
+            SELECT TotalAmount, OrderStatus
             FROM orders
             WHERE OrderID = %s
+            FOR UPDATE
             """,
             (order_id,)
         )
@@ -332,36 +350,61 @@ def record_payment(order_id, method):
         order = cursor.fetchone()
 
         if order is None:
-            print("Order not found.")
-            return False
+            raise ValueError("Order not found.")
 
-        # Check whether this order already has a payment.
+        amount = order[0]
+        current_status = order[1]
+
+        # Check whether payment already exists.
         cursor.execute(
-            "SELECT PaymentID FROM payment WHERE OrderID = %s",
+            """
+            SELECT PaymentID
+            FROM payment
+            WHERE OrderID = %s
+            """,
             (order_id,)
         )
 
         if cursor.fetchone():
-            print("A payment has already been recorded for this order.")
-            return False
+            raise ValueError(
+                "A payment has already been recorded for this order."
+            )
 
+        # Record payment.
         cursor.execute(
             """
             INSERT INTO payment
             (OrderID, Amount, Method, PaymentDate, PaymentStatus)
             VALUES (%s, %s, %s, CURRENT_TIMESTAMP, %s)
             """,
-            (order_id, order[0], method, "Paid")
+            (order_id, amount, method, "Paid")
         )
 
+        # Automatically move Pending orders to Processing.
+        # Do not downgrade orders that are already Shipped or Delivered.
+        if current_status == "Pending":
+
+            cursor.execute(
+                """
+                UPDATE orders
+                SET OrderStatus = %s
+                WHERE OrderID = %s
+                """,
+                ("Processing", order_id)
+            )
+
+        # Save payment and status change together.
         connection.commit()
 
         print("Payment recorded successfully.")
-        print(f"Payment amount: €{order[0]}")
+        print(f"Payment amount: €{amount}")
+
+        if current_status == "Pending":
+            print("Order status automatically changed to Processing.")
 
         return True
 
-    except Error as e:
+    except (Error, ValueError) as e:
         connection.rollback()
         print(f"Error recording payment: {e}")
         return False
