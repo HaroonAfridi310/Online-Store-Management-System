@@ -1,6 +1,5 @@
 
-from database import get_all_products, search_products
-
+from product_operations import get_all_products, search_products
 
 def main():
     print("Welcome to Online Store Application")
