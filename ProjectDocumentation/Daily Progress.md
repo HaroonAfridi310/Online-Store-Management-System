@@ -92,7 +92,6 @@
 - Practised inserting a single product using `INSERT`.
 - Used `executemany()` to insert multiple products.
 - Practised deleting product records using `DELETE`.
-- Used `commit()` to save database changes.
 - Closed the database cursor and connection.
 
 **⚠️ Problems Faced**
@@ -162,9 +161,105 @@
 
 ---
 
-# 📅 Week 3 – Database Integration
+# 📅 Week 3 – Database Integration, Application Development and Testing
 
-<text color="secondary">⏳ To be updated at the end of Week 3.</text>
+## 👨‍💻 Haroon Afridi – Database Management and Application Development
+
+**✅ Work Completed**
+- Continued working with the `ecommerce_storedb` MySQL database.
+- Organised the Python project into separate modules for database connection, product operations and order operations.
+- Connected the Python application to the MySQL database.
+- Developed product, order and payment management features.
+- Created the application interface using Streamlit.
+- Added automated testing using pytest, with all 17 tests passing.
+- Updated project documentation and pushed changes to both GitHub repositories.ment.
+- Developed the Streamlit interface to make the application easier to use.
+- Updated the project README and Week 3 progress documentation.
+
+**⚠️ Problems Faced**
+- Worked on handling database transactions and ensuring that stock quantities were updated correctly.
+- Faced issues while handling database query results and application operations.
+- Encountered Git merge conflicts and push rejections because the team repository contained newer changes. These were resolved by merging the latest team changes.
+
+**🎯 Next Steps**
+- Continue improving the application and its user interface.
+- Review the remaining project requirements, including the OOP requirement.
+- Improve input validation and error handling.
+- Continue testing the application and updating documentation.
+
+---
+
+## 👨‍💻 Pradeep Sapkota – Product Module and Backend
+
+**✅ Work Completed**
+- Participated in discussions about the Product module and its functionality.
+- Supported the development and improvement of the application interface.
+- Worked alongside Haroon on application features.
+- Reviewed the product management workflow and its connection with the database.
+- Participated in discussions about integrating different application components.
+
+**⚠️ Problems Faced**
+- Needed to coordinate the Product module with the database and the other application features.
+
+**🎯 Next Steps**
+- Continue supporting product management improvements.
+- Review the existing product operations and application workflow.
+- Help identify and improve any issues in the application.
+
+---
+
+## 👨‍💻 Poshan Oli – Order Module
+
+**✅ Work Completed**
+- Reviewed the Order and OrderItem tables and their relationships.
+- Participated in discussions about order creation and processing.
+- Provided support during discussions about order management functionality.
+- Reviewed how products, quantities and order details are connected.
+
+**⚠️ Problems Faced**
+- Needed to understand how multiple products and quantities are handled within a single order.
+
+**🎯 Next Steps**
+- Continue reviewing the order management functionality.
+- Support further improvements to order processing.
+- Review the relationship between orders, products and payments.
+
+---
+
+## 👨‍💻 Lamyae Echaoui – Testing and Documentation
+
+**✅ Work Completed**
+- Participated in discussions about project progress and completed features.
+- Reviewed the application requirements and main functionalities.
+- Supported the organisation and preparation of project documentation.
+- Participated in reviewing the application interface and its usability.
+- Discussed possible improvements and issues that should be checked during testing.
+- Supported coordination and documentation of the team's development activities.
+
+**⚠️ Problems Faced**
+- Needed to keep the documentation aligned with the latest application changes.
+- Needed to review the implemented features against the project requirements.
+
+**🎯 Next Steps**
+- Continue updating project documentation.
+- Review the application features and identify possible issues.
+- Support further testing and final project improvements.
+
+---
+
+### 📌 Week 3 – Team Summary
+
+- Integrated the Python application with the MySQL database.
+- Organised the project into separate Python modules.
+- Developed the main product management, order management and payment features.
+- Created a Streamlit interface for interacting with the application.
+- Implemented stock checking and automatic stock updates during order creation.
+- Improved payment handling and automatic order status updates.
+- Created automated tests using pytest and successfully passed all 17 tests.
+- Updated the README and weekly project documentation.
+- Synced the latest project changes with both personal and team GitHub repositories.
+
+**Overall Result:** The project progressed from basic Python–MySQL practice to a working Online Store Management System with product, order and payment functionality.
 
 ---
 
@@ -174,10 +269,10 @@
 |---|---|---|
 | Week 1 | Project planning and requirements | Completed |
 | Week 2 | Python and MySQL practice | Completed |
-| Week 3 | Database integration | Upcoming |
-| Week 4 | Product and Order development | Upcoming |
+| Week 3 | Database integration, application development and testing | Completed |
+| Week 4 | OOP requirement and application improvements | Upcoming |
 | Week 5 | Feature completion and integration | Upcoming |
-| Week 6 | Testing and error handling | Upcoming |
+| Week 6 | Further testing and error handling | Upcoming |
 | Week 7 | Documentation and improvements | Upcoming |
 | Week 8 | Final testing and presentation | Upcoming |
 
