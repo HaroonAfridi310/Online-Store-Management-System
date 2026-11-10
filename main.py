@@ -7,16 +7,34 @@ from product_operations import (
     delete_product
 )
 
+from order_operations import (
+    create_order,
+    get_all_orders,
+    get_order_details,
+    update_order_status,
+    record_payment
+)
+
 
 def main():
     while True:
         print("\n===== Online Store Application =====")
+
+        print("\n--- Product Management ---")
         print("1. Display all products")
         print("2. Search products")
         print("3. Find product by ID")
         print("4. Add a new product")
         print("5. Delete a product")
-        print("6. Exit")
+
+        print("\n--- Order Management ---")
+        print("6. Create a new order")
+        print("7. Display all orders")
+        print("8. View order details")
+        print("9. Update order status")
+        print("10. Record payment")
+
+        print("\n11. Exit")
 
         choice = input("\nEnter your choice: ")
 
@@ -60,6 +78,92 @@ def main():
                 print("Please enter a valid product ID.")
 
         elif choice == "6":
+            customer_id = input("Enter customer ID: ")
+
+            if not customer_id.isdigit():
+                print("Please enter a valid customer ID.")
+                continue
+
+            items = []
+
+            while True:
+                product_id = input("Enter product ID: ")
+                quantity = input("Enter quantity: ")
+
+                if not product_id.isdigit() or not quantity.isdigit():
+                    print("Please enter valid numbers.")
+                    continue
+
+                if int(quantity) <= 0:
+                    print("Quantity must be greater than zero.")
+                    continue
+
+                items.append((int(product_id), int(quantity)))
+
+                more = input("Add another product? (y/n): ").lower()
+
+                if more != "y":
+                    break
+
+            if items:
+                create_order(int(customer_id), items)
+
+        elif choice == "7":
+            get_all_orders()
+
+        elif choice == "8":
+            order_id = input("Enter order ID: ")
+
+            if order_id.isdigit():
+                get_order_details(int(order_id))
+            else:
+                print("Please enter a valid order ID.")
+
+        elif choice == "9":
+            order_id = input("Enter order ID: ")
+
+            if not order_id.isdigit():
+                print("Please enter a valid order ID.")
+                continue
+
+            print("Available statuses:")
+            print("1. Pending")
+            print("2. Processing")
+            print("3. Shipped")
+            print("4. Delivered")
+
+            status_choice = input("Choose status: ")
+
+            statuses = {
+                "1": "Pending",
+                "2": "Processing",
+                "3": "Shipped",
+                "4": "Delivered"
+            }
+
+            if status_choice in statuses:
+                update_order_status(
+                    int(order_id),
+                    statuses[status_choice]
+                )
+            else:
+                print("Invalid status choice.")
+
+        elif choice == "10":
+            order_id = input("Enter order ID: ")
+
+            if not order_id.isdigit():
+                print("Please enter a valid order ID.")
+                continue
+
+            method = input("Enter payment method: ")
+
+            if method.strip():
+                record_payment(int(order_id), method)
+            else:
+                print("Payment method cannot be empty.")
+
+        elif choice == "11":
             print("Thank you for using Online Store Application.")
             break
 
