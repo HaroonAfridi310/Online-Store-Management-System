@@ -2,200 +2,172 @@
 
 ## 1. Project Overview
 
-The Online Store Management System is a Python application developed to manage the main operations of an online store. It uses MySQL to store information and Streamlit to provide a simple graphical user interface.
+The Online Store Management System is a Python application developed to help store administrators manage products, stock, customers, orders, and payments.
 
-The application allows store administrators to manage products, create customer orders, update order statuses and record payments.
+The application uses Streamlit for its user interface and MySQL for database management.
 
-## 2. Project Objectives
+## 2. Main Features
 
-- Develop a working Python application.
-- Connect Python with a MySQL database.
-- Implement database operations using Python.
-- Provide a user-friendly interface using Streamlit.
-- Manage products, orders and payments.
-- Validate user input and handle errors.
-- Test the application and document the development process.
+- **Product Management:** View, search, add, and delete products.
+- **Stock Management:** Increase stock quantities for existing products.
+- **Order Management:** Create orders, view order details, update order status, and delete eligible unpaid orders.
+- **Payment Management:** Record payments and view payment details.
+- **Data Validation:** Validate user input before processing operations.
+- **Database Transactions:** Use commit and rollback to maintain database consistency.
+- **Error Handling:** Handle database and application errors.
 
-## 3. Intended Users
-
-Store administrators and employees responsible for managing products, customer orders and payments.
-
-## 4. Main Features
-
-### Product Management
-- View all available products.
-- Search products by name or category.
-- Find a product using its ID.
-- Add new products.
-- Delete products.
-
-### Order Management
-- Create orders for existing customers.
-- Select multiple products for an order.
-- Set product quantities.
-- Calculate the total order amount.
-- View all orders and order details.
-- Update order statuses.
-
-### Payment Management
-- Record payments for orders.
-- Select a payment method.
-- Display payment information.
-- View payment status, method, amount and date.
-- Automatically change an order status from Pending to Processing after successful payment.
-
-## 5. Database
-
-The application uses MySQL.
-
-**Database name:** `ecommerce_storedb`
-
-The main database tables are:
-
-| Table | Purpose |
-|---|---|
-| Customer | Stores customer information. |
-| Product | Stores product names, categories, prices and stock quantities. |
-| orders | Stores customer order information and status. |
-| OrderItem | Connects orders with products and stores quantities and unit prices. |
-| Payment | Stores payment information related to orders. |
-
-The tables are connected through primary keys and foreign keys to maintain relationships between customers, products, orders and payments.
-
-## 6. Technologies Used
+## 3. Technologies Used
 
 - Python
-- MySQL
-- MySQL Connector
 - Streamlit
-- python-dotenv
+- MySQL
+- MySQL Connector/Python
+- Python-dotenv
+- Pytest
 - Git and GitHub
-- pytest (for automated testing)
 
-## 7. Project Structure
+## 4. Project Structure
 
 ```text
 python_mysql/
 │
+├── ApplicationScreenshots/
+│
 ├── Database/
-│   └── Ecomerce.sql
+│   └── Ecommerce.sql
 │
 ├── ProjectDocumentation/
 │   ├── Daily Progress.md
 │   ├── Project Plan.md
-│   ├── Team WOrkflow.md
 │   ├── Week 1 Detailed Progress Report.md
-│   └── Week 2 Detailed Progress Report.md
+│   ├── Week 2 Detailed Progress Report.md
+│   └── Week 3 Detailed Progress Report.md
 │
-├── database.py
-├── product_operations.py
-├── order_operations.py
-├── main.py
+├── Tests/
+│   ├── test_order_operations.py
+│   ├── test_product_operations.py
+│   └── test_stock_operations.py
+│
 ├── app.py
+├── database.py
+├── main.py
+├── order_operations.py
+├── product_operations.py
+├── stock_operations.py
+├── validation.py
 ├── requirements.txt
 ├── readme.md
 └── .gitignore
 ```
 
-The `.env` file contains the local database password and should not be uploaded to GitHub.
-
-## 8. Installation and Setup
+## 5. Installation and Setup
 
 ### Requirements
 
-- Python installed on the computer.
-- MySQL Server.
-- Visual Studio Code.
-- Git.
+- Python installed on your computer
+- MySQL Server
+- MySQL Workbench (recommended)
 
-### Step 1: Clone the repository
+### Step 1: Download the project
 
-```bash
-git clone https://github.com/HaroonAfridi310/Online-Store-Management-System.git
-```
+Clone the repository or download the project files and open the project folder in VS Code.
 
-Open the project folder in Visual Studio Code.
+### Step 2: Create a virtual environment
 
-### Step 2: Create and activate a virtual environment
+Open the terminal in the project folder and run:
 
-```bash
+```powershell
 python -m venv .venv
 ```
 
-In PowerShell:
+Activate it:
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\Activate
 ```
 
-### Step 3: Install the required packages
+### Step 3: Install dependencies
 
-```bash
-python -m pip install -r requirements.txt
+```powershell
+pip install -r requirements.txt
 ```
 
-### Step 4: Configure the database
+### Step 4: Set up the database
 
-Create the MySQL database and import the SQL file located in the `Database` folder.
+1. Open MySQL Workbench.
+2. Open `Database/Ecommerce.sql`.
+3. Execute the SQL script to create the database tables and sample data.
 
-Create a `.env` file in the main project folder and add:
+The database contains five main tables:
 
-```text
-MYSQL_PASSWORD=your_actual_mysql_password
+- **Customer:** Stores customer information.
+- **Product:** Stores product details and stock quantities.
+- **orders:** Stores customer orders and their status.
+- **OrderItem:** Stores the products and quantities included in each order.
+- **Payment:** Stores payment information.
+
+### Step 5: Configure the database password
+
+Create a `.env` file in the project root directory.
+
+Add your MySQL password:
+
+```env
+MYSQL_PASSWORD=your_mysql_password
 ```
 
-Replace the example value with your local MySQL password.
+Replace `your_mysql_password` with your own MySQL password.
 
-Do not upload the `.env` file to GitHub.
+Keep `.env` private and do not upload it to GitHub.
 
-### Step 5: Run the application
+## 6. Run the Application
 
-```bash
+With the virtual environment activated, run:
+
+```powershell
 python -m streamlit run app.py
 ```
 
 Streamlit will open the application in your web browser.
 
-## 9. Team Contributions
+## 7. Run Tests
 
-| Team Member | Responsibility |
-|---|---|
-| Haroon Afridi | Database management and integration |
-| Pradeep Sapkota | Product module and backend development |
-| Poshan Oli | Order management module |
-| Lamyae Echaoui | Testing, documentation and collaboration |
+To run the automated tests, execute:
 
-Team members collaborate on integration, testing and project improvements.
+```powershell
+python -m pytest -v
+```
 
-## 10. Development Plan
+### Test Results
 
-1. Finalize project requirements and structure.
-2. Connect Python to the MySQL database.
-3. Implement product operations.
-4. Develop order management.
-5. Implement payment management.
-6. Build the Streamlit interface.
-7. Perform application testing and debugging.
-8. Complete documentation and prepare the final demonstration.
+The project currently has **28 passing tests** covering:
 
-## 11. Testing
+- Order operations
+- Product operations
+- Stock management
+- Input validation
+- Database error handling and rollback
 
-The application will be tested to check:
+Latest recorded test result: **28 passed**.
 
-- Database connectivity.
-- Product operations.
-- Order creation and calculations.
-- Stock quantity updates.
-- Order status changes.
-- Payment recording.
-- Input validation and error handling.
+## 8. Project Documentation
 
-Automated tests will be developed using pytest.
+Additional project documents are available in the `ProjectDocumentation` folder:
 
-## 12. Future Improvements
+- Daily Progress
+- Project Plan
+- Week 1 Detailed Progress Report
+- Week 2 Detailed Progress Report
+- Week 3 Detailed Progress Report
+- Week 4 Detailed Progress Report
 
-- Add product update functionality.
-- Add customer management operations.
-- Improve input validation.
-- Expand automated test coverage.
-- Improve the user interface.
+
+Application screenshots are available in the `ApplicationScreenshots` folder.
+
+## 9. Project Team
+
+- Haroon Afridi
+- Pradeep Sapkota
+- Poshan Oli
+- Lamyae Echaoui
+

@@ -1,59 +1,56 @@
 
 from database import get_connection
-from mysql.connector import Error
+from validation import (
+    validate_order,
+    validate_order_status,
+    validate_payment
+)
 from decimal import Decimal
 
 
+# Allowed order status progression.
+ALLOWED_STATUS_TRANSITIONS = {
+    "Pending": "Processing",
+    "Processing": "Shipped",
+    "Shipped": "Delivered",
+    "Delivered": None
+}
+
+
 def create_order(customer_id, items):
-    """Create an order containing one or more products."""
+    """Create an order only when all requested products are available."""
+
+    customer_id, items = validate_order(customer_id, items)
+
+    combined_items = {}
+
+    for product_id, quantity in items:
+        combined_items[product_id] = (
+            combined_items.get(product_id, 0) + quantity
+        )
+
     connection = get_connection()
-
-    if connection is None:
-        return None
-
     cursor = None
 
     try:
-        cursor = connection.cursor()
         connection.start_transaction()
+        cursor = connection.cursor()
 
-        # Check whether customer exists.
         cursor.execute(
-            "SELECT CustomerID FROM customer WHERE CustomerID = %s",
+            """
+            SELECT CustomerID
+            FROM customer
+            WHERE CustomerID = %s
+            """,
             (customer_id,)
         )
 
         if cursor.fetchone() is None:
             raise ValueError("Customer not found.")
 
-        # Combine repeated product IDs.
-        combined_items = {}
+        product_details = {}
 
-        for product_id, quantity in items:
-            combined_items[product_id] = (
-                combined_items.get(product_id, 0) + quantity
-            )
-
-        if not combined_items:
-            raise ValueError("An order must contain at least one product.")
-
-        # Create the order.
-        cursor.execute(
-            """
-            INSERT INTO orders (CustomerID, OrderStatus, TotalAmount)
-            VALUES (%s, %s, %s)
-            """,
-            (customer_id, "Pending", Decimal("0.00"))
-        )
-
-        order_id = cursor.lastrowid
-        total_amount = Decimal("0.00")
-
-        # Add products and reduce stock.
-        for product_id, quantity in combined_items.items():
-
-            if quantity <= 0:
-                raise ValueError("Quantity must be greater than zero.")
+        for product_id, quantity in sorted(combined_items.items()):
 
             cursor.execute(
                 """
@@ -73,13 +70,36 @@ def create_order(customer_id, items):
                 )
 
             price = Decimal(str(product[0]))
-            stock = product[1]
+            available_stock = product[1]
 
-            if stock < quantity:
+            if quantity > available_stock:
                 raise ValueError(
-                    f"Not enough stock for product ID {product_id}. "
-                    f"Available stock: {stock}"
+                    f"Insufficient stock for product ID {product_id}. "
+                    f"Requested: {quantity}. "
+                    f"Available: {available_stock}."
                 )
+
+            product_details[product_id] = {
+                "price": price,
+                "quantity": quantity
+            }
+
+        cursor.execute(
+            """
+            INSERT INTO orders
+            (CustomerID, OrderStatus, TotalAmount)
+            VALUES (%s, %s, %s)
+            """,
+            (customer_id, "Pending", Decimal("0.00"))
+        )
+
+        order_id = cursor.lastrowid
+        total_amount = Decimal("0.00")
+
+        for product_id, details in product_details.items():
+
+            price = details["price"]
+            quantity = details["quantity"]
 
             cursor.execute(
                 """
@@ -95,13 +115,20 @@ def create_order(customer_id, items):
                 UPDATE Product
                 SET StockQuantity = StockQuantity - %s
                 WHERE ProductID = %s
+                  AND StockQuantity >= %s
                 """,
-                (quantity, product_id)
+                (quantity, product_id, quantity)
             )
+
+            if cursor.rowcount != 1:
+                raise ValueError(
+                    f"Stock changed while creating the order "
+                    f"for product ID {product_id}. "
+                    "Please try again."
+                )
 
             total_amount += price * quantity
 
-        # Update total amount.
         cursor.execute(
             """
             UPDATE orders
@@ -113,29 +140,24 @@ def create_order(customer_id, items):
 
         connection.commit()
 
-        print(f"Order created successfully. Order ID: {order_id}")
-        print(f"Total amount: €{total_amount:.2f}")
-
-        return order_id
-
-    except (Error, ValueError) as e:
+    except Exception:
         connection.rollback()
-        print(f"Could not create order: {e}")
-        return None
+        raise
+
+    else:
+        return order_id
 
     finally:
         if cursor:
             cursor.close()
+
         connection.close()
 
 
 def get_all_orders():
     """Return all orders with customer information."""
+
     connection = get_connection()
-
-    if connection is None:
-        return None
-
     cursor = None
 
     try:
@@ -157,41 +179,22 @@ def get_all_orders():
             """
         )
 
-        orders = cursor.fetchall()
-
-        if not orders:
-            print("No orders found.")
-            return []
-
-        for order in orders:
-            print(
-                f"Order ID: {order[0]} | "
-                f"Customer ID: {order[1]} | "
-                f"Customer: {order[2]} {order[3]} | "
-                f"Date: {order[4]} | "
-                f"Status: {order[5]} | "
-                f"Total: €{order[6]}"
-            )
-
-        return orders
-
-    except Error as e:
-        print(f"Error displaying orders: {e}")
-        return None
+        return cursor.fetchall()
 
     finally:
         if cursor:
             cursor.close()
+
         connection.close()
 
 
 def get_order_details(order_id):
-    """Return order details."""
+    """Return the main details of one order."""
+
+    if type(order_id) is not int or order_id <= 0:
+        raise ValueError("Order ID must be a positive whole number.")
+
     connection = get_connection()
-
-    if connection is None:
-        return None
-
     cursor = None
 
     try:
@@ -211,82 +214,190 @@ def get_order_details(order_id):
             (order_id,)
         )
 
-        order = cursor.fetchone()
-
-        if order is None:
-            print("Order not found.")
-            return None
-
-        print("\n===== Order Details =====")
-        print(f"Order ID: {order[0]}")
-        print(f"Customer ID: {order[1]}")
-        print(f"Order Date: {order[2]}")
-        print(f"Status: {order[3]}")
-        print(f"Total Amount: €{order[4]}")
-
-        cursor.execute(
-            """
-            SELECT
-                oi.ProductID,
-                p.Name,
-                oi.Quantity,
-                oi.UnitPrice,
-                (oi.Quantity * oi.UnitPrice) AS Subtotal
-            FROM orderitem oi
-            JOIN Product p ON oi.ProductID = p.ProductID
-            WHERE oi.OrderID = %s
-            """,
-            (order_id,)
-        )
-
-        items = cursor.fetchall()
-
-        print("\nProducts:")
-
-        for item in items:
-            print(
-                f"Product ID: {item[0]} | "
-                f"Name: {item[1]} | "
-                f"Quantity: {item[2]} | "
-                f"Unit Price: €{item[3]} | "
-                f"Subtotal: €{item[4]}"
-            )
-
-        return order
-
-    except Error as e:
-        print(f"Error displaying order details: {e}")
-        return None
+        return cursor.fetchone()
 
     finally:
         if cursor:
             cursor.close()
+
+        connection.close()
+
+
+def delete_order(order_id):
+    """
+    Delete an unpaid Pending or Processing order
+    and restore its product stock in one transaction.
+    """
+
+    if type(order_id) is not int or order_id <= 0:
+        raise ValueError("Order ID must be a positive whole number.")
+
+    connection = get_connection()
+    cursor = None
+
+    try:
+        connection.start_transaction()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT OrderStatus
+            FROM orders
+            WHERE OrderID = %s
+            FOR UPDATE
+            """,
+            (order_id,)
+        )
+
+        order = cursor.fetchone()
+
+        if order is None:
+            raise ValueError("Order not found.")
+
+        order_status = order[0]
+
+        if order_status not in ("Pending", "Processing"):
+            raise ValueError(
+                "Only Pending or Processing orders can be deleted. "
+                "Shipped and Delivered orders cannot be deleted."
+            )
+
+        cursor.execute(
+            """
+            SELECT PaymentID
+            FROM payment
+            WHERE OrderID = %s
+            """,
+            (order_id,)
+        )
+
+        if cursor.fetchone() is not None:
+            raise ValueError(
+                "This order has a recorded payment and cannot be deleted."
+            )
+
+        cursor.execute(
+            """
+            SELECT ProductID, Quantity
+            FROM orderitem
+            WHERE OrderID = %s
+            FOR UPDATE
+            """,
+            (order_id,)
+        )
+
+        order_items = cursor.fetchall()
+
+        if not order_items:
+            raise ValueError(
+                "This order has no products and cannot be deleted."
+            )
+
+        for product_id, quantity in order_items:
+
+            cursor.execute(
+                """
+                UPDATE Product
+                SET StockQuantity = StockQuantity + %s
+                WHERE ProductID = %s
+                """,
+                (quantity, product_id)
+            )
+
+            if cursor.rowcount != 1:
+                raise ValueError(
+                    f"Could not restore stock for product ID {product_id}."
+                )
+
+        cursor.execute(
+            """
+            DELETE FROM orderitem
+            WHERE OrderID = %s
+            """,
+            (order_id,)
+        )
+
+        cursor.execute(
+            """
+            DELETE FROM orders
+            WHERE OrderID = %s
+            """,
+            (order_id,)
+        )
+
+        if cursor.rowcount != 1:
+            raise ValueError("The order could not be deleted.")
+
+        connection.commit()
+
+    except Exception:
+        connection.rollback()
+        raise
+
+    else:
+        return True
+
+    finally:
+        if cursor:
+            cursor.close()
+
         connection.close()
 
 
 def update_order_status(order_id, status):
-    """Update the status of an order."""
+    """Update an order only to its next permitted status."""
 
-    allowed_statuses = [
-        "Pending",
-        "Processing",
-        "Shipped",
-        "Delivered"
-    ]
+    if type(order_id) is not int or order_id <= 0:
+        raise ValueError("Order ID must be a positive whole number.")
 
-    if status not in allowed_statuses:
-        print("Invalid order status.")
-        return False
+    status = validate_order_status(status)
 
     connection = get_connection()
-
-    if connection is None:
-        return False
-
     cursor = None
 
     try:
+        connection.start_transaction()
         cursor = connection.cursor()
+
+        # Lock the order while checking and changing its status.
+        cursor.execute(
+            """
+            SELECT OrderStatus
+            FROM orders
+            WHERE OrderID = %s
+            FOR UPDATE
+            """,
+            (order_id,)
+        )
+
+        order = cursor.fetchone()
+
+        if order is None:
+            raise ValueError("Order not found.")
+
+        current_status = order[0]
+
+        if current_status == status:
+            raise ValueError(
+                f"The order is already {current_status}."
+            )
+
+        allowed_next_status = ALLOWED_STATUS_TRANSITIONS.get(
+            current_status
+        )
+
+        if status != allowed_next_status:
+
+            if allowed_next_status is None:
+                raise ValueError(
+                    "A Delivered order cannot move to another status."
+                )
+
+            raise ValueError(
+                f"Invalid status change. An order with status "
+                f"{current_status} can only move to "
+                f"{allowed_next_status}."
+            )
 
         cursor.execute(
             """
@@ -299,44 +410,32 @@ def update_order_status(order_id, status):
 
         connection.commit()
 
-        if cursor.rowcount > 0:
-            print("Order status updated successfully.")
-            return True
-
-        print("Order not found or status unchanged.")
-        return False
-
-    except Error as e:
+    except Exception:
         connection.rollback()
-        print(f"Error updating order status: {e}")
-        return False
+        raise
+
+    else:
+        return True
 
     finally:
         if cursor:
             cursor.close()
+
         connection.close()
 
 
 def record_payment(order_id, method):
-    """
-    Record one full payment for an order.
+    """Record one full payment and update Pending orders to Processing."""
 
-    After successful payment, automatically change
-    Pending order status to Processing.
-    """
+    order_id, method = validate_payment(order_id, method)
 
     connection = get_connection()
-
-    if connection is None:
-        return False
-
     cursor = None
 
     try:
-        cursor = connection.cursor()
         connection.start_transaction()
+        cursor = connection.cursor()
 
-        # Get order amount and current status.
         cursor.execute(
             """
             SELECT TotalAmount, OrderStatus
@@ -355,7 +454,6 @@ def record_payment(order_id, method):
         amount = order[0]
         current_status = order[1]
 
-        # Check whether payment already exists.
         cursor.execute(
             """
             SELECT PaymentID
@@ -370,7 +468,6 @@ def record_payment(order_id, method):
                 "A payment has already been recorded for this order."
             )
 
-        # Record payment.
         cursor.execute(
             """
             INSERT INTO payment
@@ -380,8 +477,6 @@ def record_payment(order_id, method):
             (order_id, amount, method, "Paid")
         )
 
-        # Automatically move Pending orders to Processing.
-        # Do not downgrade orders that are already Shipped or Delivered.
         if current_status == "Pending":
 
             cursor.execute(
@@ -393,23 +488,17 @@ def record_payment(order_id, method):
                 ("Processing", order_id)
             )
 
-        # Save payment and status change together.
         connection.commit()
 
-        print("Payment recorded successfully.")
-        print(f"Payment amount: €{amount}")
-
-        if current_status == "Pending":
-            print("Order status automatically changed to Processing.")
-
-        return True
-
-    except (Error, ValueError) as e:
+    except Exception:
         connection.rollback()
-        print(f"Error recording payment: {e}")
-        return False
+        raise
+
+    else:
+        return True
 
     finally:
         if cursor:
             cursor.close()
+
         connection.close()
