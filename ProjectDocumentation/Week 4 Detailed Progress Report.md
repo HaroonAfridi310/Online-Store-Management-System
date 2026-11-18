@@ -1,5 +1,17 @@
-# Week 4 Detailed Progress Report
-## Online Store Management System
+# Software Development – Week 4 Progress Report
+
+**Group Members:**
+1. Haroon Afridi
+2. Pradeep Sapkota
+3. Poshan Oli
+4. Lamyae Echaoui
+
+**Week:** Week 4  
+**Topic:** Reliable Applications 
+
+(Validation, Exceptions, Transactions and Error Messages)
+
+---
 
 ### 1. Introduction
 
@@ -56,6 +68,8 @@ python -m pytest -v
 
 **Test result: 28 passed**
 
+![alt text](../ApplicationScreenshots/pytest-results-week4.png)
+
 The tests covered:
 
 - Product operations
@@ -98,7 +112,7 @@ The changes were successfully pushed to the `main` branch after synchronising th
 
 **GitHub repository:**
 
-https://github.com/HaroonAfridi310/Online-Store-Management-System
+https://github.com/pradeepsapkota-dot/Online-store_Software_developing-
 
 ### 6. Challenges and Solutions
 
