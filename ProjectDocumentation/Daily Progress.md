@@ -263,6 +263,112 @@
 
 ---
 
+# 📅 Week 4 – OOP Requirement, Application Improvements and Testing
+
+## 👨‍💻 Haroon Afridi – Database Management and Application Development
+
+**✅ Work Completed**
+- Continued developing the Online Store Management System using Python, Streamlit and MySQL.
+- Improved input validation by creating a separate `validation.py` module.
+- Improved product operations and added stock management functionality in `stock_operations.py`.
+- Developed stock increase functionality with checks for valid product IDs and quantities.
+- Improved order processing, including stock checking, order status updates and database transactions.
+- Improved database connection handling using environment variables and `python-dotenv`.
+- Expanded automated tests for product, order and stock operations.
+- Ran the test suite using `python -m pytest -v`, with all **28 tests passing**.
+
+
+
+**⚠️ Problems Faced**
+- Needed to handle invalid inputs, such as negative quantities, decimal values and invalid product IDs.
+- Worked on ensuring that database transactions are rolled back when an operation fails.
+- Needed to keep database credentials separate from the source code.
+- Encountered Git push rejection because the remote repository contained newer changes. Resolved it by pulling the latest changes with rebase before pushing.
+
+**🎯 Next Steps**
+- Review and complete the remaining OOP requirements.
+- Continue improving the Streamlit interface.
+- Test the complete application workflow, including products, stock, orders and payments.
+- Review error handling and database operations.
+- Continue updating project documentation.
+
+---
+
+## 👨‍💻 Pradeep Sapkota – Product Module and Backend
+
+**✅ Work Completed**
+- Continued reviewing the Product module and its main functionality.
+- Reviewed product management operations and their connection with the MySQL database.
+- Participated in discussions about improving product management and the application workflow.
+- Reviewed possible improvements to the backend and user interface.
+- Added error handling and logging to help manage database-related problems.
+- Committed and pushed the latest application changes to GitHub.
+- Updated the project README and weekly progress documentation.
+
+
+**⚠️ Problems Faced**
+- Needed to coordinate product operations with stock management and other application modules.
+
+**🎯 Next Steps**
+- Continue improving product management functionality.
+- Review product and stock operations.
+- Support integration and testing of the application modules.
+
+---
+
+## 👨‍💻 Poshan Oli – Order Module
+
+**✅ Work Completed**
+- Continued reviewing order creation and order processing functionality.
+- Reviewed the relationship between orders, order items and products.
+- Participated in discussions about stock checking and order status updates.
+- Reviewed how payment information is connected with order processing.
+
+**⚠️ Problems Faced**
+- Needed to ensure that order processing works correctly with product quantities and available stock.
+
+**🎯 Next Steps**
+- Continue reviewing order management functionality.
+- Support testing of order creation and processing.
+- Review order, payment and stock management workflows.
+
+---
+
+## 👨‍💻 Lamyae Echaoui – Testing and Documentation
+
+**✅ Work Completed**
+- Continued reviewing the project requirements and documentation.
+- Reviewed the application's main features and project progress.
+- Participated in discussions about testing and possible application improvements.
+- Continued supporting the organisation of project documentation.
+
+**⚠️ Problems Faced**
+- Needed to keep project documentation aligned with the latest application changes.
+- Needed to review the implemented features against the project requirements.
+
+**🎯 Next Steps**
+- Continue updating project documentation.
+- Review the application against the project requirements.
+- Support further testing and preparation for the final project stages.
+
+---
+
+### 📌 Week 4 – Team Summary
+
+- Improved input validation and error handling.
+- Added a separate validation module.
+- Improved product and stock management operations.
+- Developed stock increase functionality with input checks.
+- Improved order processing and database transaction handling.
+- Added environment-based database configuration using `python-dotenv`.
+- Expanded automated testing for product, order and stock operations.
+- Successfully passed all **28 automated tests**.
+- Updated project documentation and synchronised the latest changes with GitHub.
+
+**Overall Result:** The application became more reliable through improved validation, stock management, database error handling and automated testing. Work also continued on reviewing the remaining OOP and project requirements.
+
+---
+
 ### 📈 Overall Project Progress
 
 | Week | Main Activity | Status |
@@ -270,12 +376,12 @@
 | Week 1 | Project planning and requirements | Completed |
 | Week 2 | Python and MySQL practice | Completed |
 | Week 3 | Database integration, application development and testing | Completed |
-| Week 4 | OOP requirement and application improvements | Upcoming |
+| Week 4 | OOP requirement and application improvements | Completed / Ongoing |
 | Week 5 | Feature completion and integration | Upcoming |
 | Week 6 | Further testing and error handling | Upcoming |
 | Week 7 | Documentation and improvements | Upcoming |
 | Week 8 | Final testing and presentation | Upcoming |
 
 ---
-
-*Note: Weekly entries should reflect the actual contributions of each member. Update the information whenever the team's completed work differs from this initial record.*
+---
+# To be Continued...
